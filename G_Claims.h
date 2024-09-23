@@ -19,8 +19,20 @@ typedef enum {
     STATUS_PENDING,
     STATUS_IN_PROGRESS,
     STATUS_RESOLVED,
-    STATUS_REJECTED
 } ClaimStatus;
+
+typedef enum {
+    Cat_TECHNECAL,
+    Cat_FINANCIAL,
+    Cat_SERVICE,
+} Category;
+
+typedef enum
+{
+    ROLE_CLIENT,
+    ROLE_AGENT,
+    ROLE_ADMIN
+} UserRole;
 
 typedef enum {
     PRIORITY_LOW,
@@ -37,6 +49,7 @@ typedef struct {
     ClaimStatus status;
     ClaimPriority priority;
     time_t submissionDate;
+    time_t procssetionDate;
 } Claim;
 
 // New struct to store claim and its associated score
@@ -48,25 +61,28 @@ typedef struct {
 // Function declarations
 
 // --- Client-specific functions ---
-void clientSubmitClaim(const char* customerName, const char* reason, const char* description, const char* category);
-void displayClaims(char username );
+int generateClaimID();
+void clientSubmitClaim(const char* customerName,  char* reason,  char* description,  char* category);
+void ClientDisplayClaims(char username );
 
 //--- Commun Functions ---
 void modifyClaim(int claimID);
 void deleteClaim(int claimID);
 
 // --- Admin and Agent functions ---
-void displayClaims(void);
+void displayAllClaims();
 void processClaim(int claimID, ClaimStatus newStatus);
 void searchClaims(const char* criteria);
+void searchClaimsByCat_Stat(void);
+
+
 
 // --- Admin-exclusive functions ---
-void listClaimsByPriority(void);
-void restrictToAdmin(const char* agentName);
 
 // Priority-related functions
-void calculateClaimPriority(Claim* claim, ScoredClaim* scoredClaim);
-void assignPriority(ScoredClaim* scoredClaim);
+void calculateClaimPriority(Claim* claim);
+void assignPriority(Claim* claim, ScoredClaim* scoredClaim);
+
 
 // Save and load functions
 void saveClaims(void);

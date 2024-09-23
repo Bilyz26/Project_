@@ -27,6 +27,7 @@ typedef struct {
     time_t lockoutTime;
 } User;
 
+
 // Function declarations
 void saveUsers(void);
 void loadUsers(void);

@@ -38,7 +38,7 @@ int userCount = 0;
 
 void saveUsers()
 {
-    FILE *file = fopen(USER_FILE, "wb");
+    FILE *file = fopen(USER_FILE, "w");
     if (file == NULL)
     {
         fprintf(stderr, "Error: Unable to open file for writing.\n");
@@ -64,7 +64,7 @@ void saveUsers()
 
 void loadUsers()
 {
-    FILE *file = fopen(USER_FILE, "rb");
+    FILE *file = fopen(USER_FILE, "r");
     if (file == NULL)
     {
         printf("No existing user data found. Starting with an empty user list.\n");

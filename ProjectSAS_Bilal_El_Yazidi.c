@@ -96,14 +96,14 @@ int isPasswordValid(const char* password, const char* username)
     int hasUpper = 0, hasLower = 0, hasDigit = 0, hasSpecial = 0;
     size_t len = strlen(password);
 
-    // Vérification de la longueur minimale
+    // Vï¿½rification de la longueur minimale
     if (len < 8 || len >= MAX_PASSWORD_LENGTH)
     {
-        printf("Le mot de passe doit contenir au moins 8 caractères et ne pas dépasser %d caractères.\n", MAX_PASSWORD_LENGTH - 1);
+        printf("Le mot de passe doit contenir au moins 8 caractï¿½res et ne pas dï¿½passer %d caractï¿½res.\n", MAX_PASSWORD_LENGTH - 1);
         return 0;
     }
 
-    // Vérification des exigences de caractères
+    // Vï¿½rification des exigences de caractï¿½res
     for (size_t i = 0; i < len; i++)
     {
         if (isupper(password[i])) hasUpper = 1;
@@ -112,14 +112,14 @@ int isPasswordValid(const char* password, const char* username)
         else if (strchr("!@#$%^&*", password[i])) hasSpecial = 1;
     }
 
-    // Vérification que le mot de passe ne contient pas le nom d'utilisateur
+    // Vï¿½rification que le mot de passe ne contient pas le nom d'utilisateur
     if (strstr(password, username) != NULL)
     {
         printf("Le mot de passe ne doit pas contenir le nom d'utilisateur.\n");
         return 0;
     }
 
-    // Vérification de toutes les contraintes
+    // Vï¿½rification de toutes les contraintes
     if (!hasUpper)
         printf("Le mot de passe doit contenir au moins une lettre majuscule.\n");
     if (!hasLower)
@@ -127,7 +127,7 @@ int isPasswordValid(const char* password, const char* username)
     if (!hasDigit)
         printf("Le mot de passe doit contenir au moins un chiffre.\n");
     if (!hasSpecial)
-        printf("Le mot de passe doit contenir au moins un caractère spécial (!@#$%^&*).\n");
+        printf("Le mot de passe doit contenir au moins un caractï¿½re spï¿½cial (!@#$%^&*).\n");
 
     // Retourne 1 si toutes les conditions sont remplies
     return (hasUpper && hasLower && hasDigit && hasSpecial);
