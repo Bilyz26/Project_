@@ -324,3 +324,66 @@ User* authenticateUser() {
 
     return NULL;  // This line is reached if the loop exits normally
 }
+
+void deleteUser(UserRole userRole) {
+    if (userRole != ROLE_ADMIN) {
+        printf("You do not have permission to delete users.\n");
+        return;
+    }
+
+    char username[MAX_USERNAME_LENGTH];
+    printf("Enter username to delete: ");
+    fgets(username, sizeof(username), stdin);
+    username[strcspn(username, "\n")] = 0;  // Remove the newline character
+
+    int userFound = 0;  // Flag to check if the user was found
+
+    // Iterate through the users to find the one to delete
+    for (int i = 0; i < userCount; i++) {
+        if (strcmp(users[i].username, username) == 0) {
+            userFound = 1;
+
+            // Shift all users after the deleted one to fill the gap
+            for (int j = i; j < userCount - 1; j++) {
+                users[j] = users[j + 1];
+            }
+
+            userCount--;  // Decrease user count
+            printf("User '%s' has been deleted successfully.\n", username);
+            break;
+        }
+    }
+
+    if (!userFound) {
+        printf("User '%s' not found.\n", username);
+    }
+}
+
+void searchUser(UserRole userRole) {
+    if (userRole != ROLE_ADMIN) {
+        printf("You do not have permission to search for users.\n");
+        return;
+    }
+
+    char username[MAX_USERNAME_LENGTH];
+    printf("Enter username to search: ");
+    fgets(username, sizeof(username), stdin);
+    username[strcspn(username, "\n")] = 0;  // Remove the newline character
+
+    int userFound = 0;  // Flag to check if the user was found
+
+    // Iterate through the users to find the one matching the search
+    for (int i = 0; i < userCount; i++) {
+        if (strcmp(users[i].username, username) == 0) {
+            userFound = 1;
+            printf("User found:\n");
+            printf("Username: %s\n", users[i].username);
+            printf("Role: %s\n", (users[i].role == ROLE_ADMIN) ? "Admin" : (users[i].role == ROLE_AGENT) ? "Agent" : "Client");
+            break;
+        }
+    }
+
+    if (!userFound) {
+        printf("User '%s' not found.\n", username);
+    }
+}

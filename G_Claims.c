@@ -597,8 +597,8 @@ void displayClaim(Claim claim) {
     printf("-----------------------------------\n");
 }
 
-
 void searchClaimsByCat_Stat(UserRole userRole) {
+
     // Ensure only Admins and Agents can access this function
     if (userRole == ROLE_ADMIN || userRole == ROLE_AGENT) {
         int searchChoice;
@@ -645,3 +645,102 @@ void searchClaimsByCat_Stat(UserRole userRole) {
         printf("You do not have permission to access this feature.\n");
     }
 }
+
+void displayByPriority(UserRole userRole) {
+    // Ensure only administrators can access this function
+    if (userRole != ROLE_ADMIN) {
+        printf("You do not have permission to view claims by priority.\n");
+        return;
+    }
+
+    // Display header
+    printf("Displaying claims sorted by priority:\n");
+
+    // Temporary arrays to hold claims based on their priority
+    Claim highPriorityClaims[MAX_CLAIMS];
+    Claim mediumPriorityClaims[MAX_CLAIMS];
+    Claim lowPriorityClaims[MAX_CLAIMS];
+
+    int highCount = 0, mediumCount = 0, lowCount = 0;
+
+    // Sort claims into respective priority arrays
+    for (int i = 0; i < claimCount; i++) {
+        switch (claims[i].priority) {
+            case PRIORITY_HIGH:
+                highPriorityClaims[highCount++] = claims[i];
+                break;
+            case PRIORITY_MEDIUM:
+                mediumPriorityClaims[mediumCount++] = claims[i];
+                break;
+            case PRIORITY_LOW:
+                lowPriorityClaims[lowCount++] = claims[i];
+                break;
+        }
+    }
+
+    // Display high priority claims first
+    for (int i = 0; i < highCount; i++) {
+        printf("Claim ID: %d, Description: %s, Status: %d, Priority: High\n",
+               highPriorityClaims[i].claimID, 
+               highPriorityClaims[i].description, 
+               highPriorityClaims[i].status);
+    }
+
+    // Display medium priority claims
+    for (int i = 0; i < mediumCount; i++) {
+        printf("Claim ID: %d, Description: %s, Status: %d, Priority: Medium\n",
+               mediumPriorityClaims[i].claimID, 
+               mediumPriorityClaims[i].description, 
+               mediumPriorityClaims[i].status);
+    }
+
+    // Display low priority claims
+    for (int i = 0; i < lowCount; i++) {
+        printf("Claim ID: %d, Description: %s, Status: %d, Priority: Low\n",
+               lowPriorityClaims[i].claimID, 
+               lowPriorityClaims[i].description, 
+               lowPriorityClaims[i].status);
+    }
+}
+
+void viewComplaintStatistics(UserRole userRole) {
+    if (userRole != ROLE_ADMIN) {
+        printf("You do not have permission to view complaint statistics.\n");
+        return;
+    }
+
+    // View Total Complaints
+    printf("Total Complaints Submitted: %d\n", claimCount);
+
+    // View Complaint Resolution Rate
+    int resolvedCount = 0;
+    for (int i = 0; i < claimCount; i++) {
+        if (claims[i].status == STATUS_RESOLVED) {
+            resolvedCount++;
+        }
+    }
+
+    float resolutionRate = (claimCount > 0) ? (float)resolvedCount / claimCount * 100 : 0; // Percentage
+    printf("Total Complaints Resolved: %d\n", resolvedCount);
+    printf("Resolution Rate: %.2f%%\n", resolutionRate);
+
+    // Calculate Average Complaint Handling Time
+    time_t totalHandlingTime = 0;
+    int handledCount = 0;
+
+    for (int i = 0; i < claimCount; i++) {
+        if (claims[i].status == STATUS_RESOLVED) {
+            totalHandlingTime += claims[i].procssetionDate - claims[i].submissionDate; // Assuming these timestamps exist
+            handledCount++;
+        }
+    }
+
+    if (handledCount > 0) {
+        float averageHandlingTime = (float)totalHandlingTime / handledCount;
+        printf("Average Complaint Handling Time: %.2f seconds\n", averageHandlingTime);
+    } else {
+        printf("No complaints have been resolved yet.\n");
+    }
+}
+
+

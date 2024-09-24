@@ -31,6 +31,8 @@ typedef struct {
 // Function declarations
 void saveUsers(void);
 void loadUsers(void);
+void deleteUser(UserRole userRole);
+void searchUser(UserRole userRole);
 int isPasswordValid(const char* password, const char* username);
 int signUp(const char* username, const char* password);
 int signIn(const char* username, const char* password);

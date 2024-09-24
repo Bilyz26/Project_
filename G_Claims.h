@@ -71,18 +71,26 @@ void deleteClaim(int claimID);
 
 // --- Admin and Agent functions ---
 void displayAllClaims();
-void processClaim(int claimID, ClaimStatus newStatus);
-void searchClaims(const char* criteria);
 void searchClaimsByCat_Stat(void);
-
-
+int isClaimOwner(const char* username, int claimID);
+int isWithinTimeLimit(time_t submissionDate);
+void displayPendingClaims();
+void printClaimDetails(Claim* claim);
 
 // --- Admin-exclusive functions ---
-
+void viewComplaintStatistics(UserRole userRole);
 // Priority-related functions
 void calculateClaimPriority(Claim* claim);
 void assignPriority(Claim* claim, ScoredClaim* scoredClaim);
-
+void displayClaim(Claim claim);
+void displayByPriority(UserRole userRole);
+void viewComplaintStatistics(UserRole userRole);
+void searchByStatus(char* status);
+void searchByCategory(char* category);
+void searchClaims(UserRole userRole, char* criteria);
+time_t parseDate(const char* dateStr);
+int isNumeric(const char* str);
+void performDelete(int claimID);
 
 // Save and load functions
 void saveClaims(void);
