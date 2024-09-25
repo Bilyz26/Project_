@@ -3,69 +3,69 @@
 #include <stdlib.h>
 #include <string.h>
 #include <time.h>
-
+#include "G_Claims.h"
 #define MAX_CLAIMS 100
 #define MAX_CUSTOMER_NAME_LENGTH 50
 #define MAX_REASON_LENGTH 100
 #define MAX_DESCRIPTION_LENGTH 500
 #define MAX_CATEGORY_LENGTH 50
-#define CLAIM_FILE "claims.dat"
+#define CLAIM_FILE "claims.txt"
 #define MAX_KEYWORDS 10 // Number of keywords in the table
 
 #define MAX_USERNAME_LENGTH 50
 #define MAX_PASSWORD_LENGTH 50
 
-typedef enum
-{
-    ROLE_CLIENT,
-    ROLE_AGENT,
-    ROLE_ADMIN
-} UserRole;
+// typedef enum
+// {
+//     ROLE_CLIENT,
+//     ROLE_AGENT,
+//     ROLE_ADMIN
+// } UserRole;
 
-typedef struct
-{
-    char username[MAX_USERNAME_LENGTH];
-    char password[MAX_PASSWORD_LENGTH];
-    UserRole role;
-    int loginAttempts;
-    time_t lockoutTime;
-} User;
+// typedef struct
+// {
+//     char username[MAX_USERNAME_LENGTH];
+//     char password[MAX_PASSWORD_LENGTH];
+//     UserRole role;
+//     int loginAttempts;
+//     time_t lockoutTime;
+// } User;
 
-typedef enum {
-    STATUS_PENDING,
-    STATUS_IN_PROGRESS,
-    STATUS_RESOLVED,
-} ClaimStatus;
+// typedef enum {
+//     STATUS_PENDING,
+//     STATUS_IN_PROGRESS,
+//     STATUS_RESOLVED,
+// } ClaimStatus;
 
-typedef enum {
-    Cat_TECHNECAL,
-    Cat_FINANCIAL,
-    Cat_SERVICE,
-} Category;
+// typedef enum {
+//     Cat_TECHNECAL,
+//     Cat_FINANCIAL,
+//     Cat_SERVICE,
+// } Category;
 
-typedef enum {
-    PRIORITY_LOW,
-    PRIORITY_MEDIUM,
-    PRIORITY_HIGH
-} ClaimPriority;
+// typedef enum {
+//     PRIORITY_LOW,
+//     PRIORITY_MEDIUM,
+//     PRIORITY_HIGH
+// } ClaimPriority;
 
-typedef struct {
-    int claimID;
-    char customerName[MAX_CUSTOMER_NAME_LENGTH];
-    char reason[MAX_REASON_LENGTH];
-    char description[MAX_DESCRIPTION_LENGTH];
-    char category[MAX_CATEGORY_LENGTH];
-    ClaimStatus status;
-    ClaimPriority priority;
-    time_t submissionDate;
-    time_t procssetionDate;
-} Claim;
+// typedef struct {
+//     int claimID;
+//     char customerName[MAX_CUSTOMER_NAME_LENGTH];
+//     char reason[MAX_REASON_LENGTH];
+//     char description[MAX_DESCRIPTION_LENGTH];
+//     char category[MAX_CATEGORY_LENGTH];
+//     ClaimStatus status;
+//     ClaimPriority priority;
+//     time_t submissionDate;
+//     time_t procssetionDate;
+// } Claim;
 
-// New struct to store claim and its associated score
-typedef struct {
-    Claim claim;
-    int score;  // Score based on keywords
-} ScoredClaim;
+// // New struct to store claim and its associated score
+// typedef struct {
+//     Claim claim;
+//     int score;  // Score based on keywords
+// } ScoredClaim;
 
 
 // Global array to store claims and a count of current claims
@@ -74,7 +74,7 @@ int claimCount = 0;
 
 void saveClaims()
 {
-    FILE *file = fopen("claims.dat", "wb");
+    FILE *file = fopen("claims.dat", "w");
     if (file == NULL)
     {
         fprintf(stderr, "Error: Unable to open file for writing claims.\n");
@@ -96,7 +96,7 @@ void saveClaims()
 
 void loadClaims()
 {
-    FILE *file = fopen("claims.dat", "rb");
+    FILE *file = fopen("claims.dat", "r");
     if (file == NULL)
     {
         printf("No existing claim data found. Starting with an empty claim list.\n");
@@ -212,12 +212,17 @@ int isWithinTimeLimit(time_t submissionDate) {
     return secondsSinceSubmission <= 86400; // 86400 seconds in 24 hours
 }
 
-void modifyClaim(int claimID, UserRole userRole, const char* username) {
-    // Display user's claims before modification
-    if (userRole == ROLE_CLIENT) {
-        ClientDisplayClaims((char*)username); // Cast to char* for compatibility
+void modifyClaim(User User) {
+    int claimID;  // Local variable for claim ID
+    printf("Enter the claim ID to modify: ");
+    scanf("%d", &claimID);
+    getchar(); // To clear the newline from the input buffer
+
+    // Display claims based on the user's role
+    if (User.role == ROLE_CLIENT) {
+        ClientDisplayClaims(User.username);  // Display the client's own claims
     } else {
-        displayAllClaims(); // Assuming this function displays all claims for admins/agents
+        displayAllClaims();  // Admins/agents can view all claims
     }
 
     // Find the claim by claimID
@@ -235,10 +240,10 @@ void modifyClaim(int claimID, UserRole userRole, const char* username) {
         return;
     }
 
-    // Check user role for modifications
-    if (userRole == ROLE_CLIENT) {
+    // Check user role for modification permissions
+    if (User.role== ROLE_CLIENT) {
         // Ensure the client can only modify their own claims
-        if (!isClaimOwner(username, claimID)) {
+        if (!isClaimOwner(User.username, claimID)) {
             printf("You can only modify your own claims.\n");
             return;
         }
@@ -258,7 +263,7 @@ void modifyClaim(int claimID, UserRole userRole, const char* username) {
     printf("Description: %s\n", claimToModify->description);
     printf("Category: %s\n", claimToModify->category);
     printf("Status: %d\n", claimToModify->status);
-    
+
     // Get new details from the user
     char newReason[MAX_REASON_LENGTH];
     char newDescription[MAX_DESCRIPTION_LENGTH];
@@ -292,6 +297,7 @@ void modifyClaim(int claimID, UserRole userRole, const char* username) {
 }
 
 
+
 // Helper function to perform the delete operation
 void performDelete(int claimID) {
     for (int i = 0; i < claimCount; i++) {
@@ -309,16 +315,26 @@ void performDelete(int claimID) {
 }
 
 // Main delete function
-void deleteClaim(int claimID, const char* username, UserRole role) {
-    if (role == ROLE_CLIENT) {
-        if (!isClaimOwner(username, claimID)) {
+void deleteClaim(User user) {
+    int claimID;
+    
+    // Ask the user to input the claim ID
+    printf("Enter the claim ID to delete: ");
+    scanf("%d", &claimID);
+    getchar(); // To clear the newline from the input buffer
+
+    // Client role: Can only delete their own claims within 24 hours
+    if (user.role == ROLE_CLIENT) {
+        if (!isClaimOwner(user.username, claimID)) {
             printf("You can only delete your own claims.\n");
             return;
         }
 
         // Check if within 24 hours
+        bool found = false;
         for (int i = 0; i < claimCount; i++) {
             if (claims[i].claimID == claimID) {
+                found = true;
                 if (!isWithinTimeLimit(claims[i].submissionDate)) {
                     printf("You can only delete claims within 24 hours of submission.\n");
                     return;
@@ -326,11 +342,18 @@ void deleteClaim(int claimID, const char* username, UserRole role) {
                 break; // Found the claim and checked the time limit
             }
         }
+
+        if (!found) {
+            printf("Claim with ID %d not found.\n", claimID);
+            return;
+        }
     }
 
     // If role is admin or agent, they can delete any claim
     performDelete(claimID);
+    printf("Claim with ID %d deleted successfully.\n", claimID);
 }
+
 
 // Keywords table for scanning the claim description
 const char* keywordTable[MAX_KEYWORDS] = {

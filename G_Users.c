@@ -3,28 +3,15 @@
 #include <string.h>
 #include <ctype.h>
 #include <time.h>
+#include "G_Users.h"
 
 #define LOCKOUT_DURATION 300 // 5 minutes in seconds
 #define MAX_USERS 100
 #define MAX_USERNAME_LENGTH 50
 #define MAX_PASSWORD_LENGTH 50
-#define USER_FILE "users.dat"
+#define USER_FILE "users.txt"
 
-typedef enum
-{
-    ROLE_CLIENT,
-    ROLE_AGENT,
-    ROLE_ADMIN
-} UserRole;
 
-typedef struct
-{
-    char username[MAX_USERNAME_LENGTH];
-    char password[MAX_PASSWORD_LENGTH];
-    UserRole role;
-    int loginAttempts;
-    time_t lockoutTime;
-} User;
 
 User users[MAX_USERS];
 int userCount = 0;
@@ -220,9 +207,9 @@ int signUp(const char* username, const char* password)
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////////////////
-void changeUserRole(int adminIndex)
+void changeUserRole(UserRole userRole)
 {
-    if (users[adminIndex].role != ROLE_ADMIN)
+    if (userRole != ROLE_ADMIN)
     {
         printf("Only Administrators can change roles.\n");
         return;
