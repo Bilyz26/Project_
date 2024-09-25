@@ -53,7 +53,7 @@ char *priority_to_str(ClaimPriority priority){
 
 void saveClaims()
 {
-    FILE *file = fopen("claims.dat", "w");
+    FILE *file = fopen("claims.txt", "w");
     if (file == NULL)
     {
         fprintf(stderr, "Error: Unable to open file for writing claims.\n");
@@ -75,7 +75,7 @@ void saveClaims()
 
 void loadClaims()
 {
-    FILE *file = fopen("claims.dat", "r");
+    FILE *file = fopen("claims.txt", "r");
     if (file == NULL)
     {
         printf("No existing claim data found. Starting with an empty claim list.\n");

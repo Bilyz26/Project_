@@ -4,16 +4,13 @@
 #include <ctype.h>
 #include <time.h>
 #include "G_Users.h"
-#include "G_Claims.h"
 #include <stdbool.h>
 
 
 
 
-User users[MAX_USERS];
-int userCount = 0;
 
-void saveUsers()
+void saveUsers(User **Users, int size)
 {
     FILE *file = fopen(USER_FILE, "w");
     if (file == NULL)
@@ -21,15 +18,15 @@ void saveUsers()
         fprintf(stderr, "Error: Unable to open file for writing.\n");
         return;
     }
-    if (fwrite(&userCount, sizeof(int), 1, file) != 1)
+    for (int i = 0; i < size; i++)
     {
-        fprintf(stderr, "Error: Failed to write user count.\n");
-        fclose(file);
-        return;
-    }
-    if (fwrite(users, sizeof(User), userCount, file) != userCount)
-    {
-        fprintf(stderr, "Error: Failed to write user data.\n");
+        fprintf( file,
+                "%s %s %d %d %ld\n",
+                Users[i]->username,
+                Users[i]->password,
+                Users[i]->role,
+                Users[i]->loginAttempts,
+                Users[i]->lockoutTime);
     }
     fclose(file);
     printf("User data saved successfully.\n");

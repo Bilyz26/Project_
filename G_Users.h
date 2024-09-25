@@ -74,7 +74,7 @@ typedef struct {
 
 
 // Function declarations
-void saveUsers(void);
+void saveUsers();
 void loadUsers(void);
 void deleteUser(UserRole userRole);
 void searchUser(UserRole userRole);

@@ -202,6 +202,7 @@ case 1:
 
 User* uzar;
 int main() {
+
     uzar = authenticateUser();
     if(uzar->role==ROLE_ADMIN)
     {
