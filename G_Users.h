@@ -6,7 +6,7 @@
 #include <string.h>
 #include <ctype.h>
 #include <time.h>
-
+#include <stdbool.h>
 #define LOCKOUT_DURATION 300 // 5 minutes in seconds
 #define MAX_USERS 100
 #define MAX_USERNAME_LENGTH 50
@@ -16,6 +16,8 @@
 #define MAX_REASON_LENGTH 100
 #define MAX_DESCRIPTION_LENGTH 200
 #define MAX_CATEGORY_LENGTH 50
+#define MAX_KEYWORDS 15
+
 
 
 
@@ -49,7 +51,7 @@ typedef struct {
     char customerName[MAX_CUSTOMER_NAME_LENGTH];
     char reason[MAX_REASON_LENGTH];
     char description[MAX_DESCRIPTION_LENGTH];
-    char category[MAX_CATEGORY_LENGTH];
+     Category category;
     ClaimStatus status;
     ClaimPriority priority;
     time_t submissionDate;

@@ -5,7 +5,7 @@
 #include <time.h>
 #include "G_Users.h"
 #include "G_Claims.h"
-
+#include <stdbool.h>
 
 
 

@@ -6,7 +6,7 @@
 #include <string.h>
 #include <time.h>
 #include "G_Users.h"
-
+#include <stdbool.h>
 
 
 

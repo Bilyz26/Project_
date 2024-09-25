@@ -1,12 +1,12 @@
-
+#include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <time.h>
 #include "G_Claims.h"
-#include "G_Claims.h"
+#include "G_Users.h"
 
-
+#define MAX_CLAIMS 100
 
 Claim claims[MAX_CLAIMS];
 int claimCount = 0;
@@ -77,7 +77,7 @@ void clientSubmitClaim(const User* uzar, char* reason, char* description, Catego
     strncpy(newClaim.customerName, uzar->username, MAX_USERNAME_LENGTH);
     strncpy(newClaim.reason, reason, MAX_REASON_LENGTH);
     strncpy(newClaim.description, description, MAX_DESCRIPTION_LENGTH);
-    strncpy(newClaim.category, category, MAX_CATEGORY_LENGTH);
+    newClaim.category=category;
     newClaim.status = STATUS_PENDING;  // Initially, the status is set to pending
     newClaim.priority = PRIORITY_LOW;  // Default priority (client cannot manually set this)
     newClaim.submissionDate = time(NULL);  // Set the submission date to current time
@@ -107,7 +107,7 @@ void ClientDisplayClaims(User user) {
     int found = 0;
 
     for (int i = 0; i < claimCount; i++) {
-        if (claims[i].claimID != 0 && strcmp(claims[i].customerName, username) == 0) {
+        if (claims[i].claimID != 0 && strcmp(claims[i].customerName, user.username) == 0) {
             printf("Claim ID: %d\n", claims[i].claimID);
             printf("Reason: %s\n", claims[i].reason);
             printf("Description: %s\n", claims[i].description);
@@ -159,7 +159,7 @@ void modifyClaim(User User) {
 
     // Display claims based on the user's role
     if (User.role == ROLE_CLIENT) {
-        ClientDisplayClaims(User.username);  // Display the client's own claims
+        ClientDisplayClaims(User);  // Display the client's own claims
     } else {
         displayAllClaims();  // Admins/agents can view all claims
     }
@@ -206,7 +206,7 @@ void modifyClaim(User User) {
     // Get new details from the user
     char newReason[MAX_REASON_LENGTH];
     char newDescription[MAX_DESCRIPTION_LENGTH];
-    char newCategory[MAX_CATEGORY_LENGTH];
+    char categoryChoice;
 
     printf("Enter new reason (or press Enter to keep current): ");
     fgets(newReason, sizeof(newReason), stdin);
@@ -215,10 +215,26 @@ void modifyClaim(User User) {
     printf("Enter new description (or press Enter to keep current): ");
     fgets(newDescription, sizeof(newDescription), stdin);
     newDescription[strcspn(newDescription, "\n")] = 0;
+Category category;
 
-    printf("Enter new category (or press Enter to keep current): ");
-    fgets(newCategory, sizeof(newCategory), stdin);
-    newCategory[strcspn(newCategory, "\n")] = 0;
+      printf("Select category (1 for Technical, 2 for Financial, 3 for Service): ");
+    scanf("%d", &categoryChoice);
+
+    switch (categoryChoice) {
+        case 1:
+            category = Cat_TECHNECAL;
+            break;
+        case 2:
+            category = Cat_FINANCIAL;
+            break;
+        case 3:
+            category = Cat_SERVICE;
+            break;
+        default:
+            printf("Invalid category choice. Defaulting to Technical.\n");
+            category = Cat_TECHNECAL;
+    }
+    
 
     // Update only if new input is provided
     if (strlen(newReason) > 0) {
@@ -227,9 +243,10 @@ void modifyClaim(User User) {
     if (strlen(newDescription) > 0) {
         strncpy(claimToModify->description, newDescription, MAX_DESCRIPTION_LENGTH);
     }
-    if (strlen(newCategory) > 0) {
-        strncpy(claimToModify->category, newCategory, MAX_CATEGORY_LENGTH);
-    }
+
+   
+        claimToModify->category = category;
+    
 
     printf("Claim modified successfully.\n");
     saveClaims();  // Save the updated claims
@@ -294,12 +311,6 @@ void deleteClaim(User user) {
 }
 
 
-// Keywords table for scanning the claim description
-const char* keywordTable[MAX_KEYWORDS] = {
-    "urgent", "critical", "immediate", "important", 
-    "failure", "broken", "damaged", "error", 
-    "issue", "problem"
-};
 
 // Function to calculate the score of a claim based on keywords---------------------------------------------------------------****////
 void calculateClaimPriority(Claim* claim, ScoredClaim* scoredClaim) {

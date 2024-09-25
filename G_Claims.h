@@ -1,6 +1,6 @@
 #ifndef G_CLAIMS_H
 #define G_CLAIMS_H
-
+#include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
