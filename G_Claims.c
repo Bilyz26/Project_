@@ -11,6 +11,46 @@
 Claim claims[MAX_CLAIMS];
 int claimCount = 0;
 
+char *format_time(time_t time) {
+    struct tm *timeinfo = localtime(&time);
+    char *datr = (char *)malloc(20);
+    strftime(datr, 20, "%d-%m-%Y", timeinfo);
+    return datr;
+}
+
+char *cat_to_str(Category cat){
+    switch(cat){
+        case Cat_TECHNECAL:
+            return "Technical";
+        case Cat_FINANCIAL:
+            return "Financial";
+        case Cat_SERVICE:
+            return "Service";
+    }
+}
+
+char *status_to_str(ClaimStatus status){
+    switch(status){
+        case STATUS_PENDING:
+            return "Pending";
+        case STATUS_IN_PROGRESS:
+            return "In Progress";
+        case STATUS_RESOLVED:
+            return "Resolved";
+    }
+}
+
+char *priority_to_str(ClaimPriority priority){
+    switch(priority){
+        case PRIORITY_LOW:
+            return "Low";
+        case PRIORITY_MEDIUM:
+            return "Medium";
+        case PRIORITY_HIGH:
+            return "High";
+    }
+}
+
 void saveClaims()
 {
     FILE *file = fopen("claims.dat", "w");
@@ -111,7 +151,7 @@ void ClientDisplayClaims(User user) {
             printf("Claim ID: %d\n", claims[i].claimID);
             printf("Reason: %s\n", claims[i].reason);
             printf("Description: %s\n", claims[i].description);
-            printf("Category: %s\n", claims[i].category);
+            printf("Category: %s\n", cat_to_str(claims[i].category));
             printf("Status: %d\n", claims[i].status); // Consider using an enum to display readable status
             printf("Submission Date: %s\n", ctime(&claims[i].submissionDate));
             found = 1;
@@ -200,13 +240,13 @@ void modifyClaim(User User) {
     printf("Customer Name: %s\n", claimToModify->customerName);
     printf("Reason: %s\n", claimToModify->reason);
     printf("Description: %s\n", claimToModify->description);
-    printf("Category: %s\n", claimToModify->category);
+    printf("Category: %s\n", cat_to_str(claimToModify->category));
     printf("Status: %d\n", claimToModify->status);
 
     // Get new details from the user
     char newReason[MAX_REASON_LENGTH];
     char newDescription[MAX_DESCRIPTION_LENGTH];
-    char categoryChoice;
+    int categoryChoice;
 
     printf("Enter new reason (or press Enter to keep current): ");
     fgets(newReason, sizeof(newReason), stdin);
@@ -234,7 +274,7 @@ Category category;
             printf("Invalid category choice. Defaulting to Technical.\n");
             category = Cat_TECHNECAL;
     }
-    
+
 
     // Update only if new input is provided
     if (strlen(newReason) > 0) {
@@ -244,9 +284,9 @@ Category category;
         strncpy(claimToModify->description, newDescription, MAX_DESCRIPTION_LENGTH);
     }
 
-   
+
         claimToModify->category = category;
-    
+
 
     printf("Claim modified successfully.\n");
     saveClaims();  // Save the updated claims
@@ -273,7 +313,7 @@ void performDelete(int claimID) {
 // Main delete function
 void deleteClaim(User user) {
     int claimID;
-    
+
     // Ask the user to input the claim ID
     printf("Enter the claim ID to delete: ");
     scanf("%d", &claimID);
@@ -316,7 +356,7 @@ void deleteClaim(User user) {
 void calculateClaimPriority(Claim* claim, ScoredClaim* scoredClaim) {
     // List of keywords to search for in the claim's description
     const char* keywords[MAX_KEYWORDS] = { "urgent", "critical", "immediate", "important", "high-priority", "emergency", "issue", "problem", "failure", "escalation" };
-    
+
     // Initialize score to 0
     scoredClaim->score = 0;
     scoredClaim->claim = *claim;  // Assign the claim to the scored claim struct
@@ -352,8 +392,8 @@ void displayPendingClaims()
     for (int i = 0; i < claimCount; i++) {
         if (claims[i].status == STATUS_PENDING) {
             found = 1;
-            printf("%d\t%s\t%s\t%s\t%s\t%d\n", claims[i].claimID, claims[i].customerName, 
-                   claims[i].reason, claims[i].description, claims[i].category, claims[i].status);
+            printf("%d\t%s\t%s\t%s\t%s\t%d\n", claims[i].claimID, claims[i].customerName,
+                   claims[i].reason, claims[i].description, cat_to_str(claims[i].category), claims[i].status);
         }
     }
 
@@ -459,7 +499,7 @@ void printClaimDetails(Claim* claim) {
     printf("Customer Name: %s\n", claim->customerName);
     printf("Reason: %s\n", claim->reason);
     printf("Description: %s\n", claim->description);
-    printf("Category: %s\n", claim->category);
+    printf("Category: %s\n", cat_to_str(claim->category));
     printf("Submission Date: %s\n", submissionDateStr);
     printf("-----------------------------\n");
 }
@@ -531,7 +571,7 @@ void searchByCategory(char* category) {
     int found = 0;
     printf("Searching for claims in the category: %s\n", category);
     for (int i = 0; i < claimCount; i++) {
-        if (strcmp(claims[i].category, category) == 0) {
+        if (strcmp(cat_to_str(claims[i].category), category) == 0) {
             // Display claim if category matches
             displayClaim(claims[i]);
             found++;
@@ -547,7 +587,7 @@ void searchByStatus(char* status) {
     int found = 0;
     printf("Searching for claims with status: %s\n", status);
     for (int i = 0; i < claimCount; i++) {
-        if (strcmp(claims[i].status, status) == 0) {
+        if (strcmp(status_to_str(claims[i].status), status) == 0) {
             // Display claim if status matches
             displayClaim(claims[i]);
             found++;
@@ -562,10 +602,12 @@ void searchByStatus(char* status) {
 void displayClaim(Claim claim) {
 
     printf("Claim ID: %d\n", claim.claimID);
-    printf("Category: %s\n", claim.category);
-    printf("Status: %s\n", claim.status);
+    printf("Category: %s\n", cat_to_str(claim.category));
+    printf("Status: %s\n", status_to_str(claim.status));
     printf("Description: %s\n", claim.description);
-    printf("Date Submitted: %s\n", claim.submissionDate);
+
+    char *time = format_time(claim.submissionDate);
+    printf("Date Submitted: %s\n", time);
     // Add more fields if necessary
     printf("-----------------------------------\n");
 }
@@ -596,7 +638,7 @@ void searchClaimsByCat_Stat(UserRole userRole) {
             printf("3. Resolved\n");
             printf("Enter your choice (1, 2, or 3): ");
             scanf("%d", &statusChoice);
-            
+
             switch (statusChoice) {
                 case 1:
                     searchByStatus("In Progress");  // Function to search claims with "In Progress" status
@@ -654,24 +696,24 @@ void displayByPriority(UserRole userRole) {
     // Display high priority claims first
     for (int i = 0; i < highCount; i++) {
         printf("Claim ID: %d, Description: %s, Status: %d, Priority: High\n",
-               highPriorityClaims[i].claimID, 
-               highPriorityClaims[i].description, 
+               highPriorityClaims[i].claimID,
+               highPriorityClaims[i].description,
                highPriorityClaims[i].status);
     }
 
     // Display medium priority claims
     for (int i = 0; i < mediumCount; i++) {
         printf("Claim ID: %d, Description: %s, Status: %d, Priority: Medium\n",
-               mediumPriorityClaims[i].claimID, 
-               mediumPriorityClaims[i].description, 
+               mediumPriorityClaims[i].claimID,
+               mediumPriorityClaims[i].description,
                mediumPriorityClaims[i].status);
     }
 
     // Display low priority claims
     for (int i = 0; i < lowCount; i++) {
         printf("Claim ID: %d, Description: %s, Status: %d, Priority: Low\n",
-               lowPriorityClaims[i].claimID, 
-               lowPriorityClaims[i].description, 
+               lowPriorityClaims[i].claimID,
+               lowPriorityClaims[i].description,
                lowPriorityClaims[i].status);
     }
 }

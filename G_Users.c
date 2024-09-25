@@ -93,7 +93,7 @@ int isPasswordValid(const char* password, const char* username)
     if (!hasDigit)
         printf("Le mot de passe doit contenir au moins un chiffre.\n");
     if (!hasSpecial)
-        printf("Le mot de passe doit contenir au moins un caract�re sp�cial (!@#$%^&*).\n");
+        printf("Le mot de passe doit contenir au moins un caract�re sp�cial (!@#$^&*).\n");
 
     // Retourne 1 si toutes les conditions sont remplies
     return (hasUpper && hasLower && hasDigit && hasSpecial);
@@ -102,7 +102,7 @@ int isPasswordValid(const char* password, const char* username)
 int signIn(const char* username, const char* password)
 {
     time_t currentTime = time(NULL);
-    
+
     for (int i = 0; i < userCount; i++)
     {
         if (strcmp(users[i].username, username) == 0)
@@ -112,7 +112,7 @@ int signIn(const char* username, const char* password)
                 printf("Account is locked. Please try again later.\n");
                 return 0;
             }
-            
+
             if (strcmp(users[i].password, password) == 0)
             {
                 printf("Login successful. Welcome, %s!\n", username);

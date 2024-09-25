@@ -2,15 +2,13 @@
 #include "G_Claims.h"
 #include "G_Users.h"
 #include <stdio.h>
-#include <stdlib.h>
 #include <string.h>
-#include <time.h>
 #include "G_Users.h"
 #include <stdbool.h>
 
 
 
-void AdminDisplayMenu(User* uzar) {   
+void AdminDisplayMenu(User* uzar) {
    char criteria[50];
   printf("Admin Menu:\n");
     printf("1. Change User Role\n");
@@ -24,7 +22,7 @@ void AdminDisplayMenu(User* uzar) {
     printf("9. Statistics\n");
     printf("10. Daily Report\n");
     printf("11. Exit\n");
-    
+
     int choice;
     printf("Enter your choice: ");
     scanf("%d", &choice);
@@ -35,7 +33,7 @@ void AdminDisplayMenu(User* uzar) {
 
             break;
         case 2:
-        displayAllClaims(uzar->role);
+        displayAllClaims();
             break;
         case 3:
         modifyClaim(*uzar);
@@ -49,14 +47,14 @@ void AdminDisplayMenu(User* uzar) {
             break;
 
         case 6:
-            
+
             printf("Enter search criteria: ");
             scanf("%s", criteria);
             searchClaims(uzar->role,criteria);
             break;
-        
+
         case 7:
-             searchClaimsByCat_Stat();
+             searchClaimsByCat_Stat(uzar->role);
             break;
 
         case 8:
@@ -93,14 +91,14 @@ void ClientDisplayMenu(User* uzar) {
     printf("3. Delete A Claim\n");
     printf("4. Modify A Claim\n");
     printf("5. Exit\n");
-    
+
     int choice;
     printf("Enter your choice: ");
     scanf("%d", &choice);
 
     switch (choice) {
         case 1:
-        
+
             printf("Enter your name: ");
     fgets(customerName, MAX_USERNAME_LENGTH, stdin);
     customerName[strcspn(customerName, "\n")] = 0;  // Remove newline character
@@ -162,14 +160,14 @@ void AgentDisplayMenu(User* uzar) {
     printf("5. Search Claim by (ID/Username/Submition date)\n");
     printf("6. Search Claim by (Status/Category)\n");
     printf("7. Exit\n");
-    
+
     int choice;
     printf("Enter your choice: ");
     scanf("%d", &choice);
 
     switch (choice) {
 case 1:
-        displayAllClaims(uzar->role);
+        displayAllClaims();
             break;
         case 2:
         modifyClaim(*uzar);
@@ -183,14 +181,14 @@ case 1:
             break;
 
         case 5:
-            
+
             printf("Enter search criteria: ");
             scanf("%s", criteria);
             searchClaims(uzar->role,criteria);
             break;
-        
+
         case 6:
-             searchClaimsByCat_Stat();
+             searchClaimsByCat_Stat(uzar->role);
             break;
 
         case 7:
@@ -207,15 +205,15 @@ int main() {
     uzar = authenticateUser();
     if(uzar->role==ROLE_ADMIN)
     {
-AdminDisplayMenu(uzar);
+        AdminDisplayMenu(uzar);
     }
     else if(uzar->role==ROLE_AGENT)
     {
-AgentDisplayMenu(uzar);
+        AgentDisplayMenu(uzar);
 
     }else
     {
-ClientDisplayMenu(uzar);
+        ClientDisplayMenu(uzar);
 
     }
     return 0;

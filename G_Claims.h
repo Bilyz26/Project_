@@ -8,6 +8,12 @@
 #include "G_Users.h"
 
 
+char *priority_to_str(ClaimPriority priority);
+char *cat_to_str(Category cat);
+char *status_to_str(ClaimStatus status);
+char *format_time(time_t time);
+
+void displayAllClaims();
 
 int generateClaimID();
 void clientSubmitClaim(const User* uzar,  char* reason,  char* description,  Category category);
@@ -17,7 +23,7 @@ void modifyClaim(User user);
 void deleteClaim(User user);
 // --- Admin and Agent functions ---
 void displayAllClaims();
-void searchClaimsByCat_Stat(void);
+void searchClaimsByCat_Stat(UserRole role);
 int isClaimOwner(const char* username, int claimID);
 int isWithinTimeLimit(time_t submissionDate);
 void displayPendingClaims();
