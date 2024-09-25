@@ -4,71 +4,10 @@
 #include <string.h>
 #include <time.h>
 #include "G_Claims.h"
-#define MAX_CLAIMS 100
-#define MAX_CUSTOMER_NAME_LENGTH 50
-#define MAX_REASON_LENGTH 100
-#define MAX_DESCRIPTION_LENGTH 500
-#define MAX_CATEGORY_LENGTH 50
-#define CLAIM_FILE "claims.txt"
-#define MAX_KEYWORDS 10 // Number of keywords in the table
-
-#define MAX_USERNAME_LENGTH 50
-#define MAX_PASSWORD_LENGTH 50
-
-// typedef enum
-// {
-//     ROLE_CLIENT,
-//     ROLE_AGENT,
-//     ROLE_ADMIN
-// } UserRole;
-
-// typedef struct
-// {
-//     char username[MAX_USERNAME_LENGTH];
-//     char password[MAX_PASSWORD_LENGTH];
-//     UserRole role;
-//     int loginAttempts;
-//     time_t lockoutTime;
-// } User;
-
-// typedef enum {
-//     STATUS_PENDING,
-//     STATUS_IN_PROGRESS,
-//     STATUS_RESOLVED,
-// } ClaimStatus;
-
-// typedef enum {
-//     Cat_TECHNECAL,
-//     Cat_FINANCIAL,
-//     Cat_SERVICE,
-// } Category;
-
-// typedef enum {
-//     PRIORITY_LOW,
-//     PRIORITY_MEDIUM,
-//     PRIORITY_HIGH
-// } ClaimPriority;
-
-// typedef struct {
-//     int claimID;
-//     char customerName[MAX_CUSTOMER_NAME_LENGTH];
-//     char reason[MAX_REASON_LENGTH];
-//     char description[MAX_DESCRIPTION_LENGTH];
-//     char category[MAX_CATEGORY_LENGTH];
-//     ClaimStatus status;
-//     ClaimPriority priority;
-//     time_t submissionDate;
-//     time_t procssetionDate;
-// } Claim;
-
-// // New struct to store claim and its associated score
-// typedef struct {
-//     Claim claim;
-//     int score;  // Score based on keywords
-// } ScoredClaim;
+#include "G_Claims.h"
 
 
-// Global array to store claims and a count of current claims
+
 Claim claims[MAX_CLAIMS];
 int claimCount = 0;
 
@@ -127,7 +66,7 @@ int generateClaimID() {
 }
 
 // Client-specific function to submit a claim
-void clientSubmitClaim(const char* customerName, char* reason, char* description, char* category) {
+void clientSubmitClaim(const User* uzar, char* reason, char* description, Category category) {
     if (claimCount >= MAX_CLAIMS) {
         printf("Cannot submit claim. Maximum number of claims reached.\n");
         return;
@@ -135,7 +74,7 @@ void clientSubmitClaim(const char* customerName, char* reason, char* description
 
     Claim newClaim;
     newClaim.claimID = generateClaimID();  // Auto-incremented ID
-    strncpy(newClaim.customerName, customerName, MAX_CUSTOMER_NAME_LENGTH);
+    strncpy(newClaim.customerName, uzar->username, MAX_USERNAME_LENGTH);
     strncpy(newClaim.reason, reason, MAX_REASON_LENGTH);
     strncpy(newClaim.description, description, MAX_DESCRIPTION_LENGTH);
     strncpy(newClaim.category, category, MAX_CATEGORY_LENGTH);
@@ -159,12 +98,12 @@ void clientSubmitClaim(const char* customerName, char* reason, char* description
 
 
 
-void ClientDisplayClaims(char* username) {
+void ClientDisplayClaims(User user) {
 
     // Load claims data before displaying
     loadClaims(); // Ensure you have a function to load claims data
 
-    printf("Claims for user: %s\n", username);
+    printf("Claims for user: %s\n", user.username);
     int found = 0;
 
     for (int i = 0; i < claimCount; i++) {
@@ -180,7 +119,7 @@ void ClientDisplayClaims(char* username) {
     }
 
     if (!found) {
-        printf("No claims found for user %s.\n", username);
+        printf("No claims found for user %s.\n", user.username);
     }
 }
 
